@@ -27,6 +27,9 @@
 #ifdef ANANLOG_MATRIX
 #    include "analog_matrix.h"
 #endif
+#ifdef LAYER_RGB_ENABLE
+void layer_rgb_hid_rx(uint8_t *data, uint8_t length);
+#endif
 
 #define PROTOCOL_VERSION 0x02
 
@@ -100,6 +103,11 @@ bool lemokey_raw_hid_rx(uint8_t *data, uint8_t length) {
         case 0xAB:
             factory_test_rx(data, length);
             return true;
+#endif
+#ifdef LAYER_RGB_ENABLE
+        case 0xA8:
+            layer_rgb_hid_rx(data, length);
+            break;
 #endif
         default:
             return false;
