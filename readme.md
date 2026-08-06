@@ -1,3 +1,26 @@
+# QMK Firmware — Lemokey P1 Pro with per-layer RGB
+
+Fork of [Keychron/qmk_firmware](https://github.com/Keychron/qmk_firmware) that adds per-key
+RGB lighting stored **for each layer separately** and edited from the browser — without
+recompiling or reflashing. Keychron Launcher keeps working exactly as before.
+
+**Documentation:** [English](keyboards/lemokey/p1_pro/ansi_encoder/keymaps/custom/README.md) ·
+[Русский](keyboards/lemokey/p1_pro/ansi_encoder/keymaps/custom/README.ru.md)
+
+| | |
+|---|---|
+| Keyboard | Lemokey P1 Pro, ANSI, knob version |
+| Build target | `lemokey/p1_pro/ansi_encoder:custom` |
+| Added | per-layer RGB, WebHID paint tool, Caps Word |
+| Base branch | `wireless_playground` |
+
+Everything lives in
+[`keyboards/lemokey/p1_pro/ansi_encoder/keymaps/custom/`](keyboards/lemokey/p1_pro/ansi_encoder/keymaps/custom/).
+Upstream is untouched apart from six lines in `keyboards/lemokey/common/lemokey_raw_hid.c`,
+guarded by `#ifdef`.
+
+---
+
 # Quantum Mechanical Keyboard Firmware
 
 [![Current Version](https://img.shields.io/github/tag/qmk/qmk_firmware.svg)](https://github.com/qmk/qmk_firmware/tags)
