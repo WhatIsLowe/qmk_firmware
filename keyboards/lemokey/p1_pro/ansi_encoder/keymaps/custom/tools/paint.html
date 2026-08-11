@@ -1,138 +1,347 @@
 <!doctype html>
+<html lang="ru">
 <meta charset="utf-8">
-<title>Подсветка по слоям — Lemokey P1 Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lemokey P1 Pro — подсветка по слоям</title>
 <style>
   :root {
-    --bg: #16181d;
-    --panel: #1f232b;
-    --edge: #333a45;
-    --text: #e6e9ef;
-    --dim: #8b94a3;
-    --accent: #4c8dff;
+    color-scheme: light dark;
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --edge: #dfe3e8;
+    --text: #1c2024;
+    --dim: #6b7480;
+    --accent: #2f6fed;
+    --accent-soft: #e8f0ff;
+    --good: #1a7f4b;
+    --bad: #c2352c;
+    --key-face: #fbfbfc;
+    --key-edge: #c8cdd4;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 6px 20px rgba(16, 24, 40, .06);
   }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --card: #1c1f25;
+      --edge: #2b3038;
+      --text: #e8ebf0;
+      --dim: #949cab;
+      --accent: #5b93ff;
+      --accent-soft: #1e2a44;
+      --good: #4ec98a;
+      --bad: #ff7a70;
+      --key-face: #262a32;
+      --key-edge: #171a20;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .28);
+    }
+  }
+
   * { box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
     margin: 0;
-    padding: 24px;
+    padding: 28px 24px 48px;
     background: var(--bg);
     color: var(--text);
-    font: 14px/1.5 system-ui, sans-serif;
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
-  h1 { font-size: 18px; margin: 0 0 16px; font-weight: 600; }
-  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
-  button {
-    background: var(--panel);
-    color: var(--text);
-    border: 1px solid var(--edge);
-    border-radius: 6px;
-    padding: 7px 13px;
-    font: inherit;
-    cursor: pointer;
-  }
-  button:hover:not(:disabled) { border-color: var(--accent); }
-  button:disabled { opacity: .4; cursor: default; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .layers button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  label { display: flex; align-items: center; gap: 6px; }
-  input[type=color] {
-    width: 44px; height: 32px; padding: 0;
-    background: none; border: 1px solid var(--edge); border-radius: 6px; cursor: pointer;
-  }
-  .swatches { display: flex; gap: 6px; }
-  .swatch {
-    width: 28px; height: 28px; border-radius: 6px;
-    border: 2px solid transparent; cursor: pointer;
-  }
-  .swatch.on { border-color: #fff; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
 
-  #board {
-    position: relative;
-    background: var(--panel);
-    border: 1px solid var(--edge);
-    border-radius: 10px;
-    padding: 14px;
-    overflow-x: auto;
-  }
-  #keys { position: relative; }
-  .key {
-    position: absolute;
-    border: 1px solid #000;
-    border-radius: 5px;
-    background: #2a2f38;
-    color: #f0f0f0;
-    font-size: 10px;
-    line-height: 1.1;
+  header {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    cursor: pointer;
-    overflow: hidden;
-    user-select: none;
-    padding: 1px;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
   }
-  .key.dark { color: #d8d8d8; }
-  .key.light { color: #111; }
-  .key:hover { outline: 2px solid var(--accent); z-index: 2; }
+  h1 { font-size: 21px; margin: 0 0 4px; font-weight: 650; letter-spacing: -.01em; }
+  .sub { color: var(--dim); font-size: 14px; }
 
-  #log {
-    margin-top: 14px;
-    padding: 10px 12px;
-    background: var(--panel);
+  .lang { display: flex; gap: 6px; flex-shrink: 0; }
+  .lang button {
+    display: flex; align-items: center; gap: 7px;
+    padding: 6px 11px 6px 8px;
+    background: var(--card);
     border: 1px solid var(--edge);
     border-radius: 8px;
-    font-family: ui-monospace, monospace;
-    font-size: 12px;
-    white-space: pre-wrap;
+    cursor: pointer;
+    font: inherit; font-size: 13px;
     color: var(--dim);
-    min-height: 42px;
+    transition: .15s;
   }
-  .hint { color: var(--dim); font-size: 13px; }
-  .off { color: #ff7676; }
+  .lang button svg { width: 20px; height: 14px; border-radius: 2px; display: block; box-shadow: 0 0 0 1px rgba(0,0,0,.12) inset; }
+  .lang button:hover { color: var(--text); }
+  .lang button.on { border-color: var(--accent); color: var(--text); background: var(--accent-soft); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .bar + .bar { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--edge); }
+  .label { color: var(--dim); font-size: 13px; font-weight: 500; white-space: nowrap; }
+  .grow { flex: 1; }
+
+  button.act {
+    padding: 8px 14px;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--edge);
+    border-radius: 9px;
+    font: inherit; font-size: 14px;
+    cursor: pointer;
+    transition: .15s;
+    white-space: nowrap;
+  }
+  button.act:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  button.act:disabled { opacity: .38; cursor: not-allowed; }
+  button.act.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 550; }
+  button.act.primary:hover:not(:disabled) { filter: brightness(1.08); color: #fff; }
+
+  .seg { display: inline-flex; background: var(--bg); border: 1px solid var(--edge); border-radius: 9px; padding: 3px; gap: 3px; }
+  .seg button {
+    padding: 6px 13px; border: 0; border-radius: 6px; background: none;
+    font: inherit; font-size: 14px; color: var(--dim); cursor: pointer; transition: .12s;
+  }
+  .seg button:hover { color: var(--text); }
+  .seg button.on { background: var(--card); color: var(--text); font-weight: 550; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); flex-shrink: 0; }
+  .dot.live { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent); }
+
+  .swatches { display: flex; gap: 5px; }
+  .swatch {
+    width: 26px; height: 26px; border-radius: 7px; cursor: pointer;
+    border: 2px solid transparent; box-shadow: 0 0 0 1px rgba(0,0,0,.14) inset;
+    transition: transform .12s;
+  }
+  .swatch:hover { transform: translateY(-2px); }
+  .swatch.on { border-color: var(--text); }
+  input[type=color] {
+    width: 40px; height: 30px; padding: 0; cursor: pointer;
+    background: none; border: 1px solid var(--edge); border-radius: 8px;
+  }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; font-size: 14px; }
+  .toggle input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+  #board { overflow-x: auto; padding: 22px; }
+  #keys { position: relative; margin: 0 auto; }
+  .key {
+    position: absolute;
+    border-radius: 6px;
+    background: var(--key-face);
+    box-shadow: 0 1px 0 1px var(--key-edge), 0 2px 3px rgba(0,0,0,.12);
+    color: var(--text);
+    font-size: 10.5px; font-weight: 500; line-height: 1.15;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 2px;
+    cursor: pointer; overflow: hidden; user-select: none;
+    transition: transform .08s, box-shadow .08s;
+  }
+  .key.painted { text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+  .key.on-dark { color: #f5f7fa; }
+  .key.on-light { color: #14161a; text-shadow: none; }
+  .key:hover { transform: translateY(-1px); box-shadow: 0 0 0 2px var(--accent), 0 3px 8px rgba(0,0,0,.2); z-index: 3; }
+  .key.void { opacity: .25; cursor: default; box-shadow: none; }
+  .key.void:hover { transform: none; box-shadow: none; }
+
+  #status {
+    display: flex; align-items: center; gap: 9px;
+    padding: 11px 14px; border-radius: 10px;
+    background: var(--card); border: 1px solid var(--edge);
+    font-size: 13.5px; color: var(--dim); min-height: 44px;
+  }
+  #status.warn { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 45%, var(--edge)); }
+  #status.done { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--edge)); }
+  .spin {
+    width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-top-color: var(--accent);
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hint { color: var(--dim); font-size: 13px; margin-top: 10px; }
+  kbd {
+    font: inherit; font-size: 12px; padding: 1px 6px;
+    border: 1px solid var(--edge); border-bottom-width: 2px;
+    border-radius: 5px; background: var(--bg);
+  }
+  .unsaved { color: var(--bad); font-size: 13px; font-weight: 550; }
 </style>
 
-<h1>Подсветка по слоям — Lemokey P1 Pro</h1>
+<body>
+<div class="wrap">
 
-<div class="row">
-  <button id="connect" class="primary">Подключить клавиатуру</button>
-  <span class="hint">Слой:</span>
-  <span class="layers" id="layers"></span>
-  <label><input type="checkbox" id="custom" disabled> своя раскраска для слоя</label>
-</div>
+  <header>
+    <div>
+      <h1 data-i18n="title">Подсветка по слоям</h1>
+      <div class="sub" data-i18n="sub">Lemokey P1 Pro — свой цвет каждой клавише на каждом слое</div>
+    </div>
+    <div class="lang">
+      <button id="lang-ru" onclick="setLang('ru')">
+        <svg viewBox="0 0 9 6"><rect width="9" height="6" fill="#fff"/><rect width="9" height="4" y="2" fill="#0039a6"/><rect width="9" height="2" y="4" fill="#d52b1e"/></svg>
+        Рус
+      </button>
+      <button id="lang-en" onclick="setLang('en')">
+        <svg viewBox="0 0 60 30">
+          <clipPath id="uj"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+          <rect width="60" height="30" fill="#012169"/>
+          <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+          <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uj)" stroke="#c8102e" stroke-width="4"/>
+          <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+          <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6"/>
+        </svg>
+        Eng
+      </button>
+    </div>
+  </header>
 
-<div class="row">
-  <span class="hint">Кисть:</span>
-  <span class="swatches" id="swatches"></span>
-  <input type="color" id="color" value="#ff0000">
-  <button id="fromKeymap" disabled>Только назначенные</button>
-  <button id="clear" disabled>Погасить всё</button>
-  <button id="read" disabled>Прочитать с клавиатуры</button>
-  <button id="write" class="primary" disabled>Записать и сохранить</button>
-</div>
+  <div class="card">
+    <div class="bar">
+      <button id="connect" class="act primary" data-i18n="connect">Подключить клавиатуру</button>
+      <span class="dot" id="dot"></span>
+      <span class="label" id="devname" data-i18n="notConnected">не подключено</span>
+      <span class="grow"></span>
+      <span class="unsaved" id="unsaved" hidden data-i18n="unsaved">есть несохранённые правки</span>
+    </div>
 
-<div id="board"><div id="keys"></div></div>
-<div class="hint" style="margin-top:8px">
-  Левая кнопка — покрасить, правая — погасить. Изменения уходят в клавиатуру только по «Записать и сохранить».
+    <div class="bar">
+      <span class="label" data-i18n="layer">Слой</span>
+      <span class="seg" id="layers"></span>
+      <label class="toggle">
+        <input type="checkbox" id="custom" disabled>
+        <span data-i18n="ownColors">своя раскраска для этого слоя</span>
+      </label>
+    </div>
+
+    <div class="bar">
+      <span class="label" data-i18n="brush">Кисть</span>
+      <span class="swatches" id="swatches"></span>
+      <input type="color" id="color" value="#ff3b30">
+      <span class="grow"></span>
+      <button id="fromKeymap" class="act" disabled data-i18n="onlyAssigned">Только назначенные</button>
+      <button id="clear" class="act" disabled data-i18n="clearAll">Погасить всё</button>
+      <button id="read" class="act" disabled data-i18n="reload">Перечитать</button>
+      <button id="write" class="act primary" disabled data-i18n="save">Записать и сохранить</button>
+    </div>
+  </div>
+
+  <div class="card" id="board"><div id="keys"></div></div>
+
+  <div id="status" data-i18n="hello">Подключите клавиатуру, чтобы начать.</div>
+  <div class="hint" data-i18n="hint">
+    Левая кнопка мыши — покрасить, с зажатой можно вести. Правая — погасить.
+    <kbd>Alt</kbd> + клик — взять цвет с клавиши. В клавиатуру ничего не уходит до «Записать и сохранить».
+  </div>
+
 </div>
-<div id="log">Не подключено.</div>
 
 <script>
+const TEXT = {
+  ru: {
+    lang: 'ru',
+    docTitle: 'Lemokey P1 Pro — подсветка по слоям',
+    title: 'Подсветка по слоям',
+    sub: 'Lemokey P1 Pro — свой цвет каждой клавише на каждом слое',
+    connect: 'Подключить клавиатуру',
+    connected: 'подключено',
+    notConnected: 'не подключено',
+    layer: 'Слой',
+    layerBase: 'базовый',
+    layerFn: 'Fn',
+    ownColors: 'своя раскраска для этого слоя',
+    brush: 'Кисть',
+    onlyAssigned: 'Только назначенные',
+    clearAll: 'Погасить всё',
+    reload: 'Перечитать',
+    save: 'Записать и сохранить',
+    unsaved: 'есть несохранённые правки',
+    hello: 'Подключите клавиатуру, чтобы начать.',
+    hint: 'Левая кнопка мыши — покрасить, с зажатой можно вести. Правая — погасить. <kbd>Alt</kbd> + клик — взять цвет с клавиши. В клавиатуру ничего не уходит до «Записать и сохранить».',
+    noWebHID: 'В этом браузере нет WebHID. Откройте страницу в Chrome, Edge или другом браузере на Chromium.',
+    readingMap: 'читаю карту светодиодов…',
+    readingLayer: l => `читаю слой ${l}…`,
+    layerRead: l => `Слой ${l} прочитан. Подписи на клавишах — то, что назначено в лаунчере.`,
+    painted: n => `Подсвечено ${n} назначенных клавиш. Нажмите «Записать и сохранить».`,
+    cleared: 'Все клавиши погашены. Нажмите «Записать и сохранить».',
+    writing: 'записываю…',
+    saved: l => `Слой ${l} записан в память клавиатуры.`,
+    noAnswer: 'клавиатура не ответила',
+    rejected: n => `клавиатура отклонила пакет со светодиода ${n}`,
+    busy: 'Устройство занято. Закройте вкладку Keychron Launcher и попробуйте снова.',
+    baseHint: 'Базовый слой красит и Keychron Launcher — здесь то же самое хранилище.',
+  },
+  en: {
+    lang: 'en',
+    docTitle: 'Lemokey P1 Pro — per-layer RGB',
+    title: 'Per-layer lighting',
+    sub: 'Lemokey P1 Pro — a colour for every key on every layer',
+    connect: 'Connect keyboard',
+    connected: 'connected',
+    notConnected: 'not connected',
+    layer: 'Layer',
+    layerBase: 'base',
+    layerFn: 'Fn',
+    ownColors: 'this layer has its own colours',
+    brush: 'Brush',
+    onlyAssigned: 'Only assigned keys',
+    clearAll: 'Turn all off',
+    reload: 'Reload',
+    save: 'Write and save',
+    unsaved: 'unsaved changes',
+    hello: 'Connect the keyboard to begin.',
+    hint: 'Left click paints, hold and drag to paint several. Right click turns a key off. <kbd>Alt</kbd> + click picks the colour up. Nothing reaches the keyboard until “Write and save”.',
+    noWebHID: 'This browser has no WebHID. Open the page in Chrome, Edge or another Chromium browser.',
+    readingMap: 'reading LED map…',
+    readingLayer: l => `reading layer ${l}…`,
+    layerRead: l => `Layer ${l} loaded. Key labels show what is assigned in the Launcher.`,
+    painted: n => `${n} assigned keys highlighted. Press “Write and save”.`,
+    cleared: 'All keys turned off. Press “Write and save”.',
+    writing: 'writing…',
+    saved: l => `Layer ${l} written to the keyboard.`,
+    noAnswer: 'the keyboard did not answer',
+    rejected: n => `the keyboard rejected the packet starting at LED ${n}`,
+    busy: 'Device is busy. Close the Keychron Launcher tab and try again.',
+    baseHint: 'The Launcher paints the base layer too — this is the same storage.',
+  },
+};
+
 const KEYS = [[0,0,1,0,0],[1.25,0,1,0,1],[2.25,0,1,0,2],[3.25,0,1,0,3],[4.25,0,1,0,4],[5.5,0,1,0,5],[6.5,0,1,0,6],[7.5,0,1,0,7],[8.5,0,1,0,8],[9.75,0,1,0,9],[10.75,0,1,0,10],[11.75,0,1,0,11],[12.75,0,1,0,12],[14,0,1,0,13],[15.25,0,1,0,14],[0,1.25,1,1,0],[1,1.25,1,1,1],[2,1.25,1,1,2],[3,1.25,1,1,3],[4,1.25,1,1,4],[5,1.25,1,1,5],[6,1.25,1,1,6],[7,1.25,1,1,7],[8,1.25,1,1,8],[9,1.25,1,1,9],[10,1.25,1,1,10],[11,1.25,1,1,11],[12,1.25,1,1,12],[13,1.25,2,1,13],[15.25,1.25,1,1,14],[0,2.25,1.5,2,0],[1.5,2.25,1,2,1],[2.5,2.25,1,2,2],[3.5,2.25,1,2,3],[4.5,2.25,1,2,4],[5.5,2.25,1,2,5],[6.5,2.25,1,2,6],[7.5,2.25,1,2,7],[8.5,2.25,1,2,8],[9.5,2.25,1,2,9],[10.5,2.25,1,2,10],[11.5,2.25,1,2,11],[12.5,2.25,1,2,12],[13.5,2.25,1.5,2,13],[15.25,2.25,1,2,14],[0,3.25,1.75,3,0],[1.75,3.25,1,3,1],[2.75,3.25,1,3,2],[3.75,3.25,1,3,3],[4.75,3.25,1,3,4],[5.75,3.25,1,3,5],[6.75,3.25,1,3,6],[7.75,3.25,1,3,7],[8.75,3.25,1,3,8],[9.75,3.25,1,3,9],[10.75,3.25,1,3,10],[11.75,3.25,1,3,11],[12.75,3.25,2.25,3,13],[15.25,3.25,1,3,14],[0,4.25,2.25,4,0],[2.25,4.25,1,4,2],[3.25,4.25,1,4,3],[4.25,4.25,1,4,4],[5.25,4.25,1,4,5],[6.25,4.25,1,4,6],[7.25,4.25,1,4,7],[8.25,4.25,1,4,8],[9.25,4.25,1,4,9],[10.25,4.25,1,4,10],[11.25,4.25,1,4,11],[12.25,4.25,1.75,4,12],[14.25,4.5,1,4,13],[0,5.25,1.25,5,0],[1.25,5.25,1.25,5,1],[2.5,5.25,1.25,5,2],[3.75,5.25,6.25,5,6],[10,5.25,1,5,9],[11,5.25,1,5,10],[12,5.25,1,5,11],[13.25,5.5,1,5,12],[14.25,5.5,1,5,13],[15.25,5.5,1,5,14]];
 
-const U = 42, GAP = 3, ROWS = 6, COLS = 15, LEDS = 81, NO_LED = 0xff, BATCH = 9;
+const U = 44, GAP = 4, ROWS = 6, COLS = 15, LEDS = 81, NO_LED = 0xff, BATCH = 9;
 const VID = 0x362d, PID = 0x0303;
-const PRESETS = ['#ff0000', '#ff8800', '#ffee00', '#22cc44', '#00bbdd', '#3366ff', '#aa44ff', '#ffffff'];
+// Чистые цвета: у них в HSV насыщенность 255, светодиод отдаёт максимум.
+// Приглушённые оттенки на клавиатуре выглядят блёкло.
+const PRESETS = ['#ff0000', '#ff8000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ffffff'];
 
+let T = TEXT.ru;
 let dev = null, layer = 1, ledOf = [], colors = [], keymap = [], pending = null;
+let dirty = false, brush = null;
 
 const $ = id => document.getElementById(id);
-const log = (msg, bad) => { $('log').innerHTML = bad ? `<span class="off">${msg}</span>` : msg; };
+
+function say(msg, kind) {
+  const box = $('status');
+  box.className = kind || '';
+  box.innerHTML = (kind === 'busy' ? '<span class="spin"></span>' : '') + msg;
+}
+
+function markDirty(state) {
+  dirty = state;
+  $('unsaved').hidden = !state;
+}
 
 function ask(bytes) {
   const packet = new Uint8Array(32);
   packet.set(bytes);
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => { pending = null; reject(new Error('клавиатура не ответила')); }, 1000);
+    const timer = setTimeout(() => { pending = null; reject(new Error(T.noAnswer)); }, 1000);
     pending = data => { clearTimeout(timer); resolve(data); };
     dev.sendReport(0, packet).catch(err => { clearTimeout(timer); reject(err); });
   });
@@ -149,7 +358,10 @@ async function connect() {
     const data = new Uint8Array(e.data.buffer);
     if (pending) { const f = pending; pending = null; f(data); }
   });
-  $('connect').textContent = 'Подключено';
+  $('connect').textContent = T.connect;
+  $('connect').disabled = true;
+  $('dot').classList.add('live');
+  $('devname').textContent = dev.productName || T.connected;
   for (const id of ['fromKeymap', 'clear', 'read', 'write', 'custom']) $(id).disabled = false;
   await loadAll();
 }
@@ -182,9 +394,7 @@ async function readColors(lay) {
   for (let start = 0; start < LEDS; start += BATCH) {
     const count = Math.min(BATCH, LEDS - start);
     const answer = await ask(lay === 0 ? [0xa8, 0x09, start, count] : [0xa8, 0x42, lay, start, count]);
-    for (let i = 0; i < count; i++) {
-      out.push([answer[3 + i * 3], answer[4 + i * 3], answer[5 + i * 3]]);
-    }
+    for (let i = 0; i < count; i++) out.push([answer[3 + i * 3], answer[4 + i * 3], answer[5 + i * 3]]);
   }
   return out;
 }
@@ -196,7 +406,7 @@ async function writeColors(lay) {
     for (let i = 0; i < count; i++) flat.push(...colors[start + i]);
     const head = lay === 0 ? [0xa8, 0x0a, start, count] : [0xa8, 0x43, lay, start, count];
     const answer = await ask([...head, ...flat]);
-    if (answer[2] !== 0) throw new Error(`клавиатура отвергла пакет со светодиода ${start}`);
+    if (answer[2] !== 0) throw new Error(T.rejected(start));
   }
 }
 
@@ -214,18 +424,19 @@ function rgbToHsv(r, g, b) {
   return [Math.round(h / 360 * 255) & 0xff, Math.round(max ? d / max * 255 : 0), Math.round(max * 255)];
 }
 
-function hsvToCss([h, s, v]) {
+function hsvToRgb([h, s, v]) {
   const H = h / 255 * 360, S = s / 255, V = v / 255;
   const c = V * S, x = c * (1 - Math.abs((H / 60) % 2 - 1)), m = V - c;
-  let rgb = [0, 0, 0];
-  if (H < 60) rgb = [c, x, 0]; else if (H < 120) rgb = [x, c, 0];
-  else if (H < 180) rgb = [0, c, x]; else if (H < 240) rgb = [0, x, c];
-  else if (H < 300) rgb = [x, 0, c]; else rgb = [c, 0, x];
-  return rgb.map(n => Math.round((n + m) * 255));
+  let out = [0, 0, 0];
+  if (H < 60) out = [c, x, 0]; else if (H < 120) out = [x, c, 0];
+  else if (H < 180) out = [0, c, x]; else if (H < 240) out = [0, x, c];
+  else if (H < 300) out = [x, 0, c]; else out = [c, 0, x];
+  return out.map(n => Math.round((n + m) * 255));
 }
 
 const hexToHsv = hex => rgbToHsv(
   parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16));
+const rgbToHex = ([r, g, b]) => '#' + [r, g, b].map(n => n.toString(16).padStart(2, '0')).join('');
 
 const NAMES = {
   0x28: 'Enter', 0x29: 'Esc', 0x2a: 'Bksp', 0x2b: 'Tab', 0x2c: 'Space', 0x2d: '-', 0x2e: '=',
@@ -237,7 +448,7 @@ const NAMES = {
   0xa8: 'Mute', 0xa9: 'Vol+', 0xaa: 'Vol−', 0xab: 'Next', 0xac: 'Prev', 0xad: 'Stop',
   0xae: 'Play', 0xb5: 'Bright+', 0xb6: 'Bright−',
   0xe0: 'Ctrl', 0xe1: 'Shift', 0xe2: 'Alt', 0xe3: 'Win', 0xe4: 'Ctrl', 0xe5: 'Shift',
-  0xe6: 'Alt', 0xe7: 'Win',
+  0xe6: 'Alt', 0xe7: 'Win', 0x7c73: 'CapsWord',
 };
 
 function keyName(kc) {
@@ -254,9 +465,19 @@ function keyName(kc) {
   return NAMES[kc] || '0x' + kc.toString(16);
 }
 
-function ledAt(row, col) {
+const ledAt = (row, col) => {
   const led = ledOf.length ? ledOf[row][col] : NO_LED;
   return led === NO_LED || led >= LEDS ? null : led;
+};
+
+function applyToKey(led, mode) {
+  if (mode === 'pick') {
+    $('color').value = rgbToHex(hsvToRgb(colors[led]));
+    return;
+  }
+  colors[led] = mode === 'erase' ? [0, 0, 0] : hexToHsv($('color').value);
+  markDirty(true);
+  draw();
 }
 
 function draw() {
@@ -267,26 +488,31 @@ function draw() {
   for (const [x, y, w, row, col] of KEYS) {
     const el = document.createElement('div');
     el.className = 'key';
-    el.style.left = x * U + 'px';
-    el.style.top = y * U + 'px';
-    el.style.width = w * U - GAP + 'px';
-    el.style.height = U - GAP + 'px';
+    el.style.cssText = `left:${x * U}px;top:${y * U}px;width:${w * U - GAP}px;height:${U - GAP}px`;
 
     const led = ledAt(row, col);
-    if (led !== null && colors.length) {
-      const [r, g, b] = hsvToCss(colors[led]);
-      el.style.background = `rgb(${r},${g},${b})`;
-      el.classList.add(r + g + b > 350 ? 'light' : 'dark');
+    if (led === null) {
+      el.classList.add('void');
+    } else {
+      if (colors.length) {
+        const [r, g, b] = hsvToRgb(colors[led]);
+        if (r + g + b > 30) {
+          el.style.background = `rgb(${r},${g},${b})`;
+          el.style.boxShadow = `0 1px 0 1px rgba(0,0,0,.25), 0 0 14px rgba(${r},${g},${b},.45)`;
+          el.classList.add('painted', r * .3 + g * .59 + b * .11 > 150 ? 'on-light' : 'on-dark');
+        }
+      }
+      el.onmousedown = e => {
+        e.preventDefault();
+        brush = e.altKey ? 'pick' : e.button === 2 ? 'erase' : 'paint';
+        applyToKey(led, brush);
+        if (brush === 'pick') brush = null;
+      };
+      el.onmouseenter = () => { if (brush) applyToKey(led, brush); };
+      el.oncontextmenu = e => e.preventDefault();
     }
     if (keymap.length) el.textContent = keyName(keymap[row * COLS + col]);
 
-    if (led !== null) {
-      el.onclick = () => { colors[led] = hexToHsv($('color').value); draw(); };
-      el.oncontextmenu = e => { e.preventDefault(); colors[led] = [0, 0, 0]; draw(); };
-    } else {
-      el.style.opacity = .35;
-      el.style.cursor = 'default';
-    }
     host.appendChild(el);
     maxX = Math.max(maxX, (x + w) * U);
     maxY = Math.max(maxY, (y + 1) * U);
@@ -300,27 +526,33 @@ function drawLayers() {
   host.innerHTML = '';
   for (let i = 0; i < 4; i++) {
     const b = document.createElement('button');
-    b.textContent = i === 0 ? '0 (базовый)' : i === 1 ? '1 (Fn)' : String(i);
+    b.textContent = i === 0 ? `0 · ${T.layerBase}` : i === 1 ? `1 · ${T.layerFn}` : String(i);
     if (i === layer) b.className = 'on';
-    b.onclick = async () => { layer = i; drawLayers(); if (dev) await loadLayer(); };
+    b.onclick = async () => {
+      layer = i;
+      drawLayers();
+      if (dev) await loadLayer().catch(e => say(e.message, 'warn'));
+    };
     host.appendChild(b);
   }
 }
 
 async function loadAll() {
-  log('читаю карту светодиодов…');
+  say(T.readingMap, 'busy');
   ledOf = await readLedMap();
   await loadLayer();
 }
 
 async function loadLayer() {
-  log(`читаю слой ${layer}…`);
+  say(T.readingLayer(layer), 'busy');
   keymap = await readKeymap(layer);
   colors = await readColors(layer);
   const mask = (await ask([0xa8, 0x40]))[3];
   $('custom').checked = layer !== 0 && !!(mask & (1 << layer));
+  $('custom').disabled = layer === 0;
+  markDirty(false);
   draw();
-  log(`слой ${layer} прочитан. Подписи — то, что назначено в лаунчере.`);
+  say(T.layerRead(layer) + (layer === 0 ? ' ' + T.baseHint : ''));
 }
 
 function paintAssigned() {
@@ -330,17 +562,17 @@ function paintAssigned() {
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < COLS; col++) {
       const led = ledAt(row, col);
-      if (led === null) continue;
-      if (keymap[row * COLS + col] > 1) { colors[led] = brush; lit++; }
+      if (led !== null && keymap[row * COLS + col] > 1) { colors[led] = brush; lit++; }
     }
   }
+  markDirty(true);
   draw();
-  log(`подсвечено ${lit} назначенных клавиш — нажми «Записать и сохранить»`);
+  say(T.painted(lit));
 }
 
 async function write() {
   try {
-    log('записываю…');
+    say(T.writing, 'busy');
     await writeColors(layer);
     if (layer !== 0) {
       const mask = (await ask([0xa8, 0x40]))[3];
@@ -348,30 +580,60 @@ async function write() {
       await ask([0xa8, 0x41, next]);
     }
     await ask([0xa8, 0x02]);
-    log(`слой ${layer} записан и сохранён в память клавиатуры`);
+    markDirty(false);
+    say(T.saved(layer), 'done');
   } catch (err) {
-    log(err.message, true);
+    say(err.message, 'warn');
   }
+}
+
+function setLang(code) {
+  T = TEXT[code];
+  localStorage.setItem('lang', code);
+  document.documentElement.lang = code;
+  document.title = T.docTitle;
+  $('lang-ru').classList.toggle('on', code === 'ru');
+  $('lang-en').classList.toggle('on', code === 'en');
+  for (const el of document.querySelectorAll('[data-i18n]')) {
+    const key = el.dataset.i18n;
+    if (TEXT[code][key]) el.innerHTML = TEXT[code][key];
+  }
+  if (!dev) $('devname').textContent = T.notConnected;
+  drawLayers();
 }
 
 for (const hex of PRESETS) {
   const s = document.createElement('div');
   s.className = 'swatch';
   s.style.background = hex;
-  s.onclick = () => { $('color').value = hex; };
+  s.onclick = () => {
+    $('color').value = hex;
+    document.querySelectorAll('.swatch').forEach(el => el.classList.toggle('on', el === s));
+  };
   $('swatches').appendChild(s);
 }
 
-$('connect').onclick = () => connect().catch(e => log(e.message, true));
-$('read').onclick = () => loadLayer().catch(e => log(e.message, true));
+document.addEventListener('mouseup', () => { brush = null; });
+document.addEventListener('contextmenu', e => { if (e.target.closest('#keys')) e.preventDefault(); });
+window.addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+
+$('connect').onclick = () => connect().catch(e =>
+  say(/open|access|busy/i.test(e.message) ? T.busy : e.message, 'warn'));
+$('read').onclick = () => loadLayer().catch(e => say(e.message, 'warn'));
 $('write').onclick = write;
 $('fromKeymap').onclick = paintAssigned;
-$('clear').onclick = () => { colors = colors.map(() => [0, 0, 0]); draw(); log('всё погашено — не забудь записать'); };
+$('clear').onclick = () => {
+  colors = colors.map(() => [0, 0, 0]);
+  markDirty(true);
+  draw();
+  say(T.cleared);
+};
+
+setLang(localStorage.getItem('lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en'));
+draw();
 
 if (!navigator.hid) {
   $('connect').disabled = true;
-  log('В этом браузере нет WebHID — открой страницу в Chrome.', true);
+  say(T.noWebHID, 'warn');
 }
-drawLayers();
-draw();
 </script>
